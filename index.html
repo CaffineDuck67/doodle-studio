@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#f7f9fd" />
+<meta name="description" content="Doodle Studio is a free drawing app that runs in your browser. Brush, spray, shapes, fill, undo and save as PNG." />
+<title>Doodle Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ff48b0'/%3E%3Cpath d='M6 20c3-10 6-10 9-3s6 6 10-3' fill='none' stroke='%2314213d' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+
+<script>
+  // Apply the saved (or system) theme before first paint to avoid a flash.
+  (function () {
+    var theme = null;
+    try { theme = JSON.parse(localStorage.getItem('doodle:theme')); } catch (e) {}
+    if (theme !== 'light' && theme !== 'dark') {
+      theme = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.dataset.theme = theme;
+  })();
+</script>
+</head>
+
+<body>
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></symbol>
+    <symbol id="i-spray" viewBox="0 0 24 24"><path d="M3 3h.01M7 5h.01M11 7h.01M3 7h.01M7 9h.01M3 11h.01"/><rect width="4" height="4" x="15" y="5"/><path d="m19 9 2 2v10c0 .6-.4 1-1 1h-6c-.6 0-1-.4-1-1V11l2-2"/><path d="m13 14 8-2"/><path d="m13 19 8-2"/></symbol>
+    <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></symbol>
+    <symbol id="i-line" viewBox="0 0 24 24"><path d="M5 19 19 5"/></symbol>
+    <symbol id="i-rect" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/></symbol>
+    <symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9.5" ry="7"/></symbol>
+    <symbol id="i-fill" viewBox="0 0 24 24"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/></symbol>
+    <symbol id="i-picker" viewBox="0 0 24 24"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path pathLength="1" d="M3.5 15c2.6-9 5.2-9 7.8-2.6s5.2 6.4 9.2-3.2"/></svg>
+      </span>
+      <span class="brand-name">Doodle Studio</span>
+    </div>
+
+    <div class="cluster">
+      <button class="btn icon" id="undoBtn" type="button" title="Undo (Ctrl+Z)" aria-label="Undo" disabled><svg class="icon"><use href="#i-undo"/></svg></button>
+      <button class="btn icon" id="redoBtn" type="button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled><svg class="icon"><use href="#i-redo"/></svg></button>
+      <button class="btn icon" id="clearBtn" type="button" title="Clear canvas" aria-label="Clear canvas"><svg class="icon"><use href="#i-trash"/></svg></button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="cluster">
+      <button class="btn" id="newBtn" type="button" title="New canvas"><svg class="icon"><use href="#i-plus"/></svg><span class="btn-label">New</span></button>
+      <button class="btn" id="openBtn" type="button" title="Open image (Ctrl+O)"><svg class="icon"><use href="#i-image"/></svg><span class="btn-label">Open</span></button>
+      <button class="btn primary" id="saveBtn" type="button" title="Save as PNG (Ctrl+S)"><svg class="icon"><use href="#i-save"/></svg><span class="btn-label">Save</span></button>
+      <span class="divider" aria-hidden="true"></span>
+      <button class="btn icon" id="themeBtn" type="button" title="Switch theme" aria-label="Switch theme">
+        <svg class="icon theme-sun"><use href="#i-sun"/></svg>
+        <svg class="icon theme-moon"><use href="#i-moon"/></svg>
+      </button>
+      <button class="btn icon" id="helpBtn" type="button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts"><svg class="icon"><use href="#i-keyboard"/></svg></button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" hidden />
+  </header>
+
+  <!-- Tools -->
+  <nav class="tools" aria-label="Tools">
+    <button class="tool is-active" type="button" data-tool="brush" title="Brush (B)" aria-label="Brush" aria-pressed="true"><svg class="icon"><use href="#i-brush"/></svg><kbd>B</kbd></button>
+    <button class="tool" type="button" data-tool="spray" title="Spray (S)" aria-label="Spray" aria-pressed="false"><svg class="icon"><use href="#i-spray"/></svg><kbd>S</kbd></button>
+    <button class="tool" type="button" data-tool="eraser" title="Eraser (E)" aria-label="Eraser" aria-pressed="false"><svg class="icon"><use href="#i-eraser"/></svg><kbd>E</kbd></button>
+    <span class="tools-sep" role="separator"></span>
+    <button class="tool" type="button" data-tool="line" title="Line (L)" aria-label="Line" aria-pressed="false"><svg class="icon"><use href="#i-line"/></svg><kbd>L</kbd></button>
+    <button class="tool" type="button" data-tool="rect" title="Rectangle (R)" aria-label="Rectangle" aria-pressed="false"><svg class="icon"><use href="#i-rect"/></svg><kbd>R</kbd></button>
+    <button class="tool" type="button" data-tool="ellipse" title="Ellipse (O)" aria-label="Ellipse" aria-pressed="false"><svg class="icon"><use href="#i-ellipse"/></svg><kbd>O</kbd></button>
+    <span class="tools-sep" role="separator"></span>
+    <button class="tool" type="button" data-tool="fill" title="Fill (F)" aria-label="Fill" aria-pressed="false"><svg class="icon"><use href="#i-fill"/></svg><kbd>F</kbd></button>
+    <button class="tool" type="button" data-tool="picker" title="Eyedropper (I)" aria-label="Eyedropper" aria-pressed="false"><svg class="icon"><use href="#i-picker"/></svg><kbd>I</kbd></button>
+  </nav>
+
+  <!-- Canvas -->
+  <main class="stage" id="stage">
+    <div class="paper" id="paper" data-tool="brush">
+      <canvas id="canvas" aria-label="Drawing canvas"></canvas>
+      <canvas id="overlay" aria-hidden="true"></canvas>
+      <div class="ring" id="ring" hidden></div>
+    </div>
+  </main>
+
+  <!-- Settings -->
+  <aside class="panel" aria-label="Tool settings">
+    <section class="group">
+      <h2>Color</h2>
+      <div class="color-row">
+        <label class="color-well" title="Pick a color">
+          <span class="chip"></span>
+          <input type="color" id="color" value="#000000" aria-label="Pick a color" />
+        </label>
+        <input class="hex" id="hex" type="text" value="#000000" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex color" />
+      </div>
+      <div class="swatches" id="swatches"></div>
+      <div class="recent">
+        <h3>Recent</h3>
+        <div class="swatches small" id="recent"></div>
+        <p class="hint" id="recentEmpty">Colors you pick will show up here.</p>
+      </div>
+    </section>
+
+    <section class="group" data-tools="brush spray eraser line rect ellipse">
+      <div class="group-head"><h2>Size</h2><output id="sizeOut">8 px</output></div>
+      <input type="range" id="size" min="1" max="100" value="8" aria-label="Size" />
+      <div class="preview" aria-hidden="true"><span id="brushPreview"></span></div>
+    </section>
+
+    <section class="group" data-tools="brush spray eraser line rect ellipse fill">
+      <div class="group-head"><h2>Opacity</h2><output id="opacityOut">100%</output></div>
+      <input type="range" id="opacity" min="5" max="100" value="100" aria-label="Opacity" />
+    </section>
+
+    <section class="group" data-tools="rect ellipse">
+      <h2>Shape style</h2>
+      <div class="segmented" role="group" aria-label="Shape style">
+        <button type="button" data-shape="outline" aria-pressed="true">Outline</button>
+        <button type="button" data-shape="filled" aria-pressed="false">Filled</button>
+      </div>
+    </section>
+
+    <section class="group" data-tools="fill">
+      <div class="group-head"><h2>Tolerance</h2><output id="toleranceOut">16%</output></div>
+      <input type="range" id="tolerance" min="0" max="100" value="16" aria-label="Fill tolerance" />
+    </section>
+
+    <p class="tip" id="tip"></p>
+  </aside>
+
+  <!-- Status -->
+  <footer class="status">
+    <span class="stat" title="Pointer position"><span class="stat-label">Pointer</span> <span id="coords">–</span></span>
+    <span class="stat" title="Canvas size"><span class="stat-label">Canvas</span> <span id="dims">–</span></span>
+    <span class="stat" title="Zoom"><span class="stat-label">Zoom</span> <span id="zoom">100%</span></span>
+    <span class="spacer"></span>
+    <span class="save" title="Your drawing is saved in this browser automatically"><i class="save-dot" id="saveDot" data-state="saved"></i><span id="saveText">Saved in this browser</span></span>
+  </footer>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span id="toastText"></span>
+  <button type="button" id="toastAction" hidden></button>
+</div>
+
+<!-- New canvas dialog -->
+<dialog id="newDialog" class="dialog">
+  <form method="dialog" class="dialog-body" id="newForm">
+    <h2>New canvas</h2>
+    <p class="hint">Your current drawing will be replaced. Pick a size or enter your own.</p>
+
+    <div class="presets" id="presets">
+      <button type="button" data-w="1280" data-h="800"><b>Landscape</b><span>1280 × 800</span></button>
+      <button type="button" data-w="800" data-h="1200"><b>Portrait</b><span>800 × 1200</span></button>
+      <button type="button" data-w="1000" data-h="1000"><b>Square</b><span>1000 × 1000</span></button>
+      <button type="button" data-w="1920" data-h="1080"><b>Full HD</b><span>1920 × 1080</span></button>
+    </div>
+
+    <div class="size-fields">
+      <label>Width <input type="number" id="newW" min="64" max="3000" value="1280" required /></label>
+      <span aria-hidden="true">×</span>
+      <label>Height <input type="number" id="newH" min="64" max="3000" value="800" required /></label>
+    </div>
+    <p class="hint">Sizes go from 64 to 3000 px.</p>
+
+    <div class="dialog-actions">
+      <button class="btn" type="button" id="newCancel">Cancel</button>
+      <button class="btn primary" type="submit" value="create">Create canvas</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Shortcuts dialog -->
+<dialog id="helpDialog" class="dialog">
+  <div class="dialog-body">
+    <h2>Keyboard shortcuts</h2>
+    <div class="keys">
+      <div><span>Brush</span><kbd>B</kbd></div>
+      <div><span>Spray</span><kbd>S</kbd></div>
+      <div><span>Eraser</span><kbd>E</kbd></div>
+      <div><span>Line</span><kbd>L</kbd></div>
+      <div><span>Rectangle</span><kbd>R</kbd></div>
+      <div><span>Ellipse</span><kbd>O</kbd></div>
+      <div><span>Fill</span><kbd>F</kbd></div>
+      <div><span>Eyedropper</span><kbd>I</kbd></div>
+      <div><span>Smaller size</span><kbd>[</kbd></div>
+      <div><span>Larger size</span><kbd>]</kbd></div>
+      <div><span>Undo</span><kbd>Ctrl Z</kbd></div>
+      <div><span>Redo</span><kbd>Ctrl Shift Z</kbd></div>
+      <div><span>Save as PNG</span><kbd>Ctrl S</kbd></div>
+      <div><span>Open image</span><kbd>Ctrl O</kbd></div>
+    </div>
+    <p class="hint">On a Mac, use ⌘ instead of Ctrl. Hold Shift while dragging to snap lines to 45° and draw perfect squares and circles. You can also drop or paste an image onto the canvas.</p>
+    <div class="dialog-actions">
+      <button class="btn primary" type="button" id="helpClose">Got it</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>
