@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#f7f9fd" />
-<meta name="description" content="Doodle Studio is a free drawing app that runs in your browser. Brush, spray, shapes, fill, undo and save as PNG." />
+<meta name="description" content="Doodle Studio is a free drawing app that runs in your browser. Layers, text, brush, spray, shapes, fill, zoom and pan. Save or copy as PNG." />
 <title>Doodle Studio</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ff48b0'/%3E%3Cpath d='M6 20c3-10 6-10 9-3s6 6 10-3' fill='none' stroke='%2314213d' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
 
@@ -36,13 +36,23 @@
     <symbol id="i-line" viewBox="0 0 24 24"><path d="M5 19 19 5"/></symbol>
     <symbol id="i-rect" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/></symbol>
     <symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9.5" ry="7"/></symbol>
+    <symbol id="i-text" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></symbol>
     <symbol id="i-fill" viewBox="0 0 24 24"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/></symbol>
     <symbol id="i-picker" viewBox="0 0 24 24"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><path d="m5 9-3 3 3 3"/><path d="m9 5 3-3 3 3"/><path d="m15 19-3 3-3-3"/><path d="m19 9 3 3-3 3"/><path d="M2 12h20"/><path d="M12 2v20"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
     <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
     <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol>
     <symbol id="i-save" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-merge" viewBox="0 0 24 24"><path d="m8 6 4-4 4 4"/><path d="M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22"/><path d="m20 22-5-5"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6M14 11v6"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
@@ -64,14 +74,15 @@
     <div class="cluster">
       <button class="btn icon" id="undoBtn" type="button" title="Undo (Ctrl+Z)" aria-label="Undo" disabled><svg class="icon"><use href="#i-undo"/></svg></button>
       <button class="btn icon" id="redoBtn" type="button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled><svg class="icon"><use href="#i-redo"/></svg></button>
-      <button class="btn icon" id="clearBtn" type="button" title="Clear canvas" aria-label="Clear canvas"><svg class="icon"><use href="#i-trash"/></svg></button>
+      <button class="btn icon" id="clearBtn" type="button" title="Clear layer" aria-label="Clear layer"><svg class="icon"><use href="#i-trash"/></svg></button>
     </div>
 
     <div class="spacer"></div>
 
     <div class="cluster">
       <button class="btn" id="newBtn" type="button" title="New canvas"><svg class="icon"><use href="#i-plus"/></svg><span class="btn-label">New</span></button>
-      <button class="btn" id="openBtn" type="button" title="Open image (Ctrl+O)"><svg class="icon"><use href="#i-image"/></svg><span class="btn-label">Open</span></button>
+      <button class="btn" id="importBtn" type="button" title="Import an image as a new layer (Ctrl+O)"><svg class="icon"><use href="#i-image"/></svg><span class="btn-label">Import</span></button>
+      <button class="btn" id="copyBtn" type="button" title="Copy image to clipboard (Ctrl+C)"><svg class="icon"><use href="#i-clipboard"/></svg><span class="btn-label">Copy</span></button>
       <button class="btn primary" id="saveBtn" type="button" title="Save as PNG (Ctrl+S)"><svg class="icon"><use href="#i-save"/></svg><span class="btn-label">Save</span></button>
       <span class="divider" aria-hidden="true"></span>
       <button class="btn icon" id="themeBtn" type="button" title="Switch theme" aria-label="Switch theme">
@@ -92,18 +103,24 @@
     <button class="tool" type="button" data-tool="line" title="Line (L)" aria-label="Line" aria-pressed="false"><svg class="icon"><use href="#i-line"/></svg><kbd>L</kbd></button>
     <button class="tool" type="button" data-tool="rect" title="Rectangle (R)" aria-label="Rectangle" aria-pressed="false"><svg class="icon"><use href="#i-rect"/></svg><kbd>R</kbd></button>
     <button class="tool" type="button" data-tool="ellipse" title="Ellipse (O)" aria-label="Ellipse" aria-pressed="false"><svg class="icon"><use href="#i-ellipse"/></svg><kbd>O</kbd></button>
+    <button class="tool" type="button" data-tool="text" title="Text (T)" aria-label="Text" aria-pressed="false"><svg class="icon"><use href="#i-text"/></svg><kbd>T</kbd></button>
     <span class="tools-sep" role="separator"></span>
     <button class="tool" type="button" data-tool="fill" title="Fill (F)" aria-label="Fill" aria-pressed="false"><svg class="icon"><use href="#i-fill"/></svg><kbd>F</kbd></button>
     <button class="tool" type="button" data-tool="picker" title="Eyedropper (I)" aria-label="Eyedropper" aria-pressed="false"><svg class="icon"><use href="#i-picker"/></svg><kbd>I</kbd></button>
+    <span class="tools-sep" role="separator"></span>
+    <button class="tool" type="button" data-tool="move" title="Move layer (V)" aria-label="Move layer" aria-pressed="false"><svg class="icon"><use href="#i-move"/></svg><kbd>V</kbd></button>
+    <button class="tool" type="button" data-tool="hand" title="Pan (H, or hold Space)" aria-label="Pan" aria-pressed="false"><svg class="icon"><use href="#i-hand"/></svg><kbd>H</kbd></button>
   </nav>
 
   <!-- Canvas -->
-  <main class="stage" id="stage">
-    <div class="paper" id="paper" data-tool="brush">
-      <canvas id="canvas" aria-label="Drawing canvas"></canvas>
-      <canvas id="overlay" aria-hidden="true"></canvas>
-      <div class="ring" id="ring" hidden></div>
+  <main class="stage" id="stage" data-tool="brush">
+    <div class="paper" id="paper">
+      <div class="layers" id="layers" role="img" aria-label="Drawing canvas">
+        <canvas id="overlay" aria-hidden="true"></canvas>
+      </div>
     </div>
+    <div class="ring" id="ring" hidden></div>
+    <textarea class="text-editor" id="textEditor" hidden wrap="off" spellcheck="false" aria-label="Text to add"></textarea>
   </main>
 
   <!-- Settings -->
@@ -131,7 +148,23 @@
       <div class="preview" aria-hidden="true"><span id="brushPreview"></span></div>
     </section>
 
-    <section class="group" data-tools="brush spray eraser line rect ellipse fill">
+    <section class="group" data-tools="text">
+      <h2>Text</h2>
+      <select class="select" id="fontFamily" aria-label="Font">
+        <option value="sans">Sans</option>
+        <option value="serif">Serif</option>
+        <option value="mono">Monospace</option>
+        <option value="hand">Handwriting</option>
+      </select>
+      <div class="segmented" role="group" aria-label="Text style">
+        <button type="button" data-fmt="bold" aria-pressed="false"><b>Bold</b></button>
+        <button type="button" data-fmt="italic" aria-pressed="false"><i>Italic</i></button>
+      </div>
+      <div class="group-head sub"><h3>Text size</h3><output id="textSizeOut">48 px</output></div>
+      <input type="range" id="textSize" min="8" max="200" value="48" aria-label="Text size" />
+    </section>
+
+    <section class="group" data-tools="brush spray eraser line rect ellipse fill text">
       <div class="group-head"><h2>Opacity</h2><output id="opacityOut">100%</output></div>
       <input type="range" id="opacity" min="5" max="100" value="100" aria-label="Opacity" />
     </section>
@@ -145,8 +178,30 @@
     </section>
 
     <section class="group" data-tools="fill">
-      <div class="group-head"><h2>Tolerance</h2><output id="toleranceOut">16%</output></div>
+      <h2>Fill from</h2>
+      <div class="segmented" role="group" aria-label="Fill from">
+        <button type="button" data-sample="layer" aria-pressed="true">This layer</button>
+        <button type="button" data-sample="all" aria-pressed="false">All layers</button>
+      </div>
+      <div class="group-head sub"><h3>Tolerance</h3><output id="toleranceOut">16%</output></div>
       <input type="range" id="tolerance" min="0" max="100" value="16" aria-label="Fill tolerance" />
+    </section>
+
+    <section class="group">
+      <div class="group-head">
+        <h2>Layers</h2>
+        <div class="mini-actions" role="group" aria-label="Layer actions">
+          <button class="mini" id="layerAdd" type="button" title="New layer" aria-label="New layer"><svg class="icon"><use href="#i-plus"/></svg></button>
+          <button class="mini" id="layerDuplicate" type="button" title="Duplicate layer" aria-label="Duplicate layer"><svg class="icon"><use href="#i-copy"/></svg></button>
+          <button class="mini" id="layerMerge" type="button" title="Merge down" aria-label="Merge layer down"><svg class="icon"><use href="#i-merge"/></svg></button>
+          <button class="mini" id="layerUp" type="button" title="Move layer up" aria-label="Move layer up"><svg class="icon"><use href="#i-arrow-up"/></svg></button>
+          <button class="mini" id="layerDown" type="button" title="Move layer down" aria-label="Move layer down"><svg class="icon"><use href="#i-arrow-down"/></svg></button>
+          <button class="mini" id="layerDelete" type="button" title="Delete layer" aria-label="Delete layer"><svg class="icon"><use href="#i-trash"/></svg></button>
+        </div>
+      </div>
+      <ul class="layer-list" id="layerList"></ul>
+      <div class="group-head sub"><h3>Layer opacity</h3><output id="layerOpacityOut">100%</output></div>
+      <input type="range" id="layerOpacity" min="5" max="100" value="100" aria-label="Layer opacity" />
     </section>
 
     <p class="tip" id="tip"></p>
@@ -156,8 +211,13 @@
   <footer class="status">
     <span class="stat" title="Pointer position"><span class="stat-label">Pointer</span> <span id="coords">–</span></span>
     <span class="stat" title="Canvas size"><span class="stat-label">Canvas</span> <span id="dims">–</span></span>
-    <span class="stat" title="Zoom"><span class="stat-label">Zoom</span> <span id="zoom">100%</span></span>
     <span class="spacer"></span>
+    <div class="zoom" role="group" aria-label="Zoom">
+      <button type="button" id="zoomOut" title="Zoom out (-)" aria-label="Zoom out">−</button>
+      <button type="button" id="zoomReset" title="Actual size (1)">100%</button>
+      <button type="button" id="zoomIn" title="Zoom in (+)" aria-label="Zoom in">+</button>
+      <button type="button" id="zoomFit" title="Fit to window (0)">Fit</button>
+    </div>
     <span class="save" title="Your drawing is saved in this browser automatically"><i class="save-dot" id="saveDot" data-state="saved"></i><span id="saveText">Saved in this browser</span></span>
   </footer>
 </div>
@@ -172,7 +232,7 @@
 <dialog id="newDialog" class="dialog">
   <form method="dialog" class="dialog-body" id="newForm">
     <h2>New canvas</h2>
-    <p class="hint">Your current drawing will be replaced. Pick a size or enter your own.</p>
+    <p class="hint">Your current drawing and its layers will be replaced. Pick a size or enter your own.</p>
 
     <div class="presets" id="presets">
       <button type="button" data-w="1280" data-h="800"><b>Landscape</b><span>1280 × 800</span></button>
@@ -206,16 +266,26 @@
       <div><span>Line</span><kbd>L</kbd></div>
       <div><span>Rectangle</span><kbd>R</kbd></div>
       <div><span>Ellipse</span><kbd>O</kbd></div>
+      <div><span>Text</span><kbd>T</kbd></div>
       <div><span>Fill</span><kbd>F</kbd></div>
       <div><span>Eyedropper</span><kbd>I</kbd></div>
+      <div><span>Move layer</span><kbd>V</kbd></div>
+      <div><span>Pan</span><kbd>H</kbd></div>
+      <div><span>Pan while held</span><kbd>Space</kbd></div>
       <div><span>Smaller size</span><kbd>[</kbd></div>
       <div><span>Larger size</span><kbd>]</kbd></div>
+      <div><span>Zoom in</span><kbd>+</kbd></div>
+      <div><span>Zoom out</span><kbd>-</kbd></div>
+      <div><span>Fit to window</span><kbd>0</kbd></div>
+      <div><span>Actual size</span><kbd>1</kbd></div>
       <div><span>Undo</span><kbd>Ctrl Z</kbd></div>
       <div><span>Redo</span><kbd>Ctrl Shift Z</kbd></div>
+      <div><span>Copy image</span><kbd>Ctrl C</kbd></div>
       <div><span>Save as PNG</span><kbd>Ctrl S</kbd></div>
-      <div><span>Open image</span><kbd>Ctrl O</kbd></div>
+      <div><span>Import image</span><kbd>Ctrl O</kbd></div>
+      <div><span>Finish text</span><kbd>Ctrl Enter</kbd></div>
     </div>
-    <p class="hint">On a Mac, use ⌘ instead of Ctrl. Hold Shift while dragging to snap lines to 45° and draw perfect squares and circles. You can also drop or paste an image onto the canvas.</p>
+    <p class="hint">On a Mac, use ⌘ instead of Ctrl. Hold Shift while dragging to snap lines to 45° and draw perfect squares and circles. Scroll to pan and Ctrl+scroll to zoom, or pinch with two fingers on a touch screen. You can also drop or paste an image onto the canvas to add it as a layer.</p>
     <div class="dialog-actions">
       <button class="btn primary" type="button" id="helpClose">Got it</button>
     </div>
