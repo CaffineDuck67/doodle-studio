@@ -71,7 +71,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
   color: inherit;
 }
@@ -91,7 +93,7 @@ button {
   display: grid;
   height: 100vh;
   height: 100dvh;
-  grid-template-columns: 68px minmax(0, 1fr) 288px;
+  grid-template-columns: 68px minmax(0, 1fr) 300px;
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas:
     'header header header'
@@ -255,8 +257,8 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 14px 0;
+  gap: 4px;
+  padding: 12px 0;
   background: var(--chrome);
   border-right: 1px solid var(--line);
   overflow-y: auto;
@@ -300,7 +302,7 @@ button {
   flex: none;
   width: 24px;
   height: 1px;
-  margin: 6px 0;
+  margin: 5px 0;
   background: var(--line);
 }
 
@@ -309,19 +311,40 @@ button {
 .stage {
   grid-area: stage;
   position: relative;
-  display: grid;
-  place-items: center;
   min-width: 0;
   min-height: 0;
-  padding: clamp(12px, 3vw, 36px);
   overflow: hidden;
   background-color: var(--ground);
   background-image: radial-gradient(var(--dot) 1px, transparent 1.3px);
   background-size: 20px 20px;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.stage[data-tool='brush'],
+.stage[data-tool='spray'],
+.stage[data-tool='eraser'] {
+  cursor: none;
+}
+.stage[data-tool='text'] {
+  cursor: text;
+}
+.stage[data-tool='move'] {
+  cursor: move;
+}
+.stage[data-tool='hand'],
+.stage.is-space {
+  cursor: grab;
+}
+.stage.is-panning {
+  cursor: grabbing;
 }
 
 .stage.is-dragging::after {
-  content: 'Drop an image to open it';
+  content: 'Drop an image to add it as a layer';
   position: absolute;
   inset: 12px;
   display: grid;
@@ -334,34 +357,38 @@ button {
   pointer-events: none;
 }
 
+/* The paper keeps its real pixel size and is moved and scaled with a transform. */
 .paper {
-  position: relative;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
   background: #fff;
   border-radius: 3px;
   box-shadow: var(--paper-shadow);
-  touch-action: none;
 }
 
-.paper canvas {
+/* Hiding the paper shows a checkerboard, and PNG exports become transparent. */
+.paper.is-clear {
+  background: repeating-conic-gradient(#ffffff 0 25%, #d8deeb 0 50%) 0 0 / 24px 24px;
+}
+
+.layers {
+  position: absolute;
+  inset: 0;
+}
+
+.layers canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 3px;
+  pointer-events: none;
 }
 
-#overlay {
-  cursor: crosshair;
-  touch-action: none;
-  -webkit-touch-callout: none;
-  user-select: none;
-}
-
-.paper[data-tool='brush'] #overlay,
-.paper[data-tool='spray'] #overlay,
-.paper[data-tool='eraser'] #overlay {
-  cursor: none;
+.paper.pixelated canvas {
+  image-rendering: pixelated;
 }
 
 /* Brush outline that follows the mouse */
@@ -374,6 +401,25 @@ button {
   mix-blend-mode: difference;
   pointer-events: none;
   will-change: transform;
+}
+
+/* In-place text editor */
+.text-editor {
+  position: absolute;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 1.5px dashed var(--blue);
+  outline-offset: 4px;
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+  white-space: pre;
+  min-width: 2ch;
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: auto;
 }
 
 /* ---------- Settings panel ---------- */
@@ -405,13 +451,18 @@ button {
 
 .group-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
 }
 
-.group-head h2 {
+.group-head h2,
+.group-head h3 {
   margin: 0;
+}
+
+.group-head.sub {
+  margin-top: 14px;
 }
 
 .group-head output {
@@ -595,7 +646,8 @@ input[type='range']::-moz-range-thumb {
 
 .segmented {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   gap: 3px;
   padding: 3px;
   border-radius: 11px;
@@ -604,6 +656,7 @@ input[type='range']::-moz-range-thumb {
 
 .segmented button {
   height: 32px;
+  padding: 0 8px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -617,6 +670,150 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 0 1px 3px rgba(20, 33, 61, 0.22);
 }
 
+.select {
+  width: 100%;
+  height: 38px;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--chrome);
+  font-weight: 600;
+}
+
+/* ---------- Layers ---------- */
+
+.mini-actions {
+  display: flex;
+  gap: 1px;
+  margin-right: -6px;
+}
+
+.mini {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.mini .icon {
+  width: 17px;
+  height: 17px;
+}
+
+.mini:hover:not(:disabled) {
+  background: var(--chrome-2);
+}
+
+.mini:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.layer-list {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1.5px solid transparent;
+  border-radius: 11px;
+}
+
+.layer-row.is-active {
+  border-color: var(--blue);
+  background: var(--chrome-2);
+}
+
+.layer-row.is-hidden .thumb,
+.layer-row.is-hidden .layer-name {
+  opacity: 0.45;
+}
+
+.eye {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.eye:hover {
+  background: var(--chrome-2);
+  color: var(--ink);
+}
+
+.layer-row.is-active .eye:hover {
+  background: var(--line);
+}
+
+.eye .icon {
+  width: 17px;
+  height: 17px;
+}
+
+.layer-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+}
+
+.thumb {
+  flex: none;
+  width: 44px;
+  height: 32px;
+  border-radius: 6px;
+  background: repeating-conic-gradient(var(--checker-a) 0 25%, var(--checker-b) 0 50%) 0 0 / 10px 10px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.thumb.paper-swatch {
+  background: #fff;
+}
+
+.layer-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.layer-rename {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  background: var(--chrome);
+  font-weight: 600;
+}
+
 /* ---------- Status bar ---------- */
 
 .status {
@@ -624,7 +821,7 @@ input[type='range']::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 7px 14px calc(7px + env(safe-area-inset-bottom, 0px));
+  padding: 5px 14px calc(5px + env(safe-area-inset-bottom, 0px));
   background: var(--chrome);
   border-top: 1px solid var(--line);
   color: var(--muted);
@@ -642,9 +839,35 @@ input[type='range']::-moz-range-thumb {
   color: var(--ink);
 }
 
-.stat #dims,
-.stat #zoom {
+.stat #dims {
   color: var(--ink);
+}
+
+.zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.zoom button {
+  height: 26px;
+  min-width: 28px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom button:hover {
+  background: var(--chrome-2);
+}
+
+#zoomReset {
+  min-width: 54px;
 }
 
 .save {
@@ -678,6 +901,7 @@ input[type='range']::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 14px;
+  max-width: calc(100vw - 24px);
   padding: 10px 16px;
   border-radius: 12px;
   background: var(--ink);
@@ -709,7 +933,7 @@ input[type='range']::-moz-range-thumb {
 /* ---------- Dialogs ---------- */
 
 .dialog {
-  width: min(460px, calc(100vw - 28px));
+  width: min(500px, calc(100vw - 28px));
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -889,7 +1113,7 @@ input[type='range']::-moz-range-thumb {
 
   .panel {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     align-content: start;
     gap: 16px;
     max-height: 34dvh;
@@ -904,8 +1128,9 @@ input[type='range']::-moz-range-thumb {
   }
 
   .status {
-    padding-top: 6px;
-    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    gap: 10px;
+    padding-top: 4px;
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
   }
 
   .toast {
