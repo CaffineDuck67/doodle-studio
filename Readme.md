@@ -8,15 +8,21 @@ A fast, free drawing app that runs entirely in your browser. No install, no acco
 
 ## Features
 
-- **Eight tools:** brush, spray, eraser, line, rectangle, ellipse, fill bucket and eyedropper
+- **Layers:** up to 12 layers with show/hide, per-layer opacity, rename (double-click), duplicate, reorder, merge down and delete. The paper can be hidden too, so exports become transparent
+- **Text tool:** click to type right on the canvas, with four font styles, bold, italic and any size from 8 to 200 px. Multi-line text works
+- **Zoom and pan:** zoom from 5% to 800% with the mouse wheel, pinch, the zoom buttons or the keyboard. Pan with the hand tool, by holding `Space`, or by scrolling
+- **Copy to clipboard:** copy the finished image and paste it straight into a chat, document or another app
+- **Eleven tools:** brush, spray, eraser, line, rectangle, ellipse, text, fill bucket, eyedropper, move and pan
 - **Color:** color picker, 18-color palette, hex input and recently used colors
 - **Brush controls:** size (1–100 px) and opacity sliders with a live preview, plus a brush outline that follows your cursor
 - **Smooth strokes:** freehand lines are curve-smoothed, and mouse, touch and pen input all work
 - **Shapes:** outline or filled rectangles and ellipses. Hold `Shift` for perfect squares and circles, or to snap lines to 45°
-- **Smart fill:** flood fill with an adjustable tolerance so it can cross soft, anti-aliased edges
-- **Undo and redo:** the number of steps adapts to canvas size to keep memory use in check
-- **Autosave:** your drawing is saved in the browser and restored when you come back
-- **Import and export:** save as PNG, or open an image by clicking, dragging it onto the canvas, or pasting it
+- **Smart fill:** flood fill with an adjustable tolerance. Choose **This layer** or **All layers** to color inside lines that live on a different layer
+- **Real eraser:** erases to transparent, so lower layers show through
+- **Move tool:** drag to reposition everything on a layer, which is handy for imported images
+- **Undo and redo:** up to 100 steps, covering strokes, fills, text and every layer action
+- **Autosave:** your whole drawing, layers included, is saved in the browser and restored when you come back
+- **Import and export:** save as PNG, or import an image as a new layer by clicking, dragging it onto the canvas or pasting it
 - **Custom canvas size:** presets or any size from 64 to 3000 px
 - **Light and dark themes:** follows your system setting and remembers your choice
 - **Responsive:** works on desktop, tablet and phone
@@ -31,16 +37,28 @@ A fast, free drawing app that runs entirely in your browser. No install, no acco
 | Line | `L` |
 | Rectangle | `R` |
 | Ellipse | `O` |
+| Text | `T` |
 | Fill | `F` |
 | Eyedropper | `I` |
+| Move layer | `V` |
+| Pan | `H` |
+| Pan while held | `Space` |
 | Smaller / larger size | `[` / `]` |
+| Zoom in / out | `+` / `-` |
+| Fit to window | `0` |
+| Actual size (100%) | `1` |
 | Undo | `Ctrl` + `Z` |
 | Redo | `Ctrl` + `Shift` + `Z` (or `Ctrl` + `Y`) |
+| Copy image | `Ctrl` + `C` |
 | Save as PNG | `Ctrl` + `S` |
-| Open image | `Ctrl` + `O` |
+| Import image | `Ctrl` + `O` |
+| Finish text | `Ctrl` + `Enter` (or click away) |
+| Cancel text | `Esc` |
 | Show shortcuts | `?` |
 
 On a Mac, use `⌘` instead of `Ctrl`.
+
+Other gestures: scroll to pan, `Ctrl` + scroll to zoom, middle-click and drag to pan, and pinch with two fingers on a touch screen.
 
 ## Run it locally
 
@@ -71,37 +89,42 @@ python3 -m http.server 8000
 ```
 ├── index.html   # Markup, icon sprite and dialogs
 ├── style.css    # Theme, layout and components
-└── script.js    # Drawing engine, tools, history, autosave and shortcuts
+└── script.js    # Layers, drawing engine, tools, history, autosave and shortcuts
 ```
 
 ## How it works
 
-- **Fixed-resolution canvas.** The drawing keeps its own resolution (1280 × 800 by default, 900 × 1200 on narrow screens) and is scaled with CSS to fit the window. Exports are always full size.
-- **Overlay layer.** Strokes and shape previews are drawn on a transparent canvas above the drawing, then committed when you lift the pointer. This is what makes opacity behave properly: overlapping parts of one stroke don't get darker.
+- **Layers.** Each layer is its own transparent canvas, stacked in the page and combined only when you save or copy. The paper is a separate white backdrop, which is why the eraser can truly erase and why you can export with a transparent background.
+- **Zoom and pan.** The drawing keeps its real resolution (1280 × 800 by default, 900 × 1200 on narrow screens). A single CSS transform moves and scales it, and pointer positions are converted back to canvas pixels, so drawing stays accurate at any zoom. Past 300% the browser shows crisp pixels instead of blurring them.
+- **Overlay stroke.** Strokes and shape previews are drawn on a transparent canvas just above the active layer, then committed when you lift the pointer. This is what makes opacity behave properly: overlapping parts of one stroke don't get darker.
 - **Smooth lines.** Freehand strokes are drawn as quadratic curves through the midpoints between pointer samples, using coalesced pointer events when the browser provides them.
-- **Flood fill.** A scanline fill on the raw pixel data, with a 1 px grow so the fill tucks under anti-aliased edges (skipped at 0% tolerance).
-- **Undo history.** Snapshots are stored as `ImageData` within a memory budget of about 96 MB, which is 4 to 50 steps depending on canvas size.
-- **Autosave.** After each change, the drawing is saved as a PNG data URL in `localStorage`. Very large drawings may exceed the browser's storage quota, in which case the status bar shows "Autosave unavailable" and you can still save a PNG manually.
+- **Flood fill.** A scanline fill on the raw pixel data, with a 1 px grow so the fill tucks under anti-aliased edges (skipped at 0% tolerance). It can read from the active layer or from all layers combined, and it always paints onto the active layer.
+- **Undo history.** Each step stores only the rectangle that changed, not the whole canvas, so strokes cost a few kilobytes. Layer actions are stored as small entries of their own. The history is capped at 100 steps and about 128 MB.
+- **Autosave.** After each change, layers are encoded as PNG blobs and written to IndexedDB. Only layers that changed are re-encoded, and IndexedDB has far more room than `localStorage`, so big multi-layer drawings fit. A drawing saved by the first version of the app is imported automatically as a single layer.
+- **Copy to clipboard.** Uses the async Clipboard API with a PNG of the combined image. It needs a secure page (HTTPS, which GitHub Pages provides) and a browser that supports copying images. If copying isn't available, Save still works.
 
 ## Customize
 
 | What | Where |
 | --- | --- |
 | Colors and theme | CSS variables at the top of `style.css` (`:root` and `:root[data-theme='dark']`) |
-| Fonts | The Google Fonts link in `index.html` and `--font-ui` / `--font-display` in `style.css` |
+| Fonts (UI) | The Google Fonts link in `index.html` and `--font-ui` / `--font-display` in `style.css` |
+| Fonts (text tool) | The `FONTS` object in `script.js` (and the matching `<option>` list in `index.html`) |
 | Palette | The `PALETTE` array in `script.js` |
 | Canvas size limits | `MIN_SIDE` and `MAX_SIDE` in `script.js` |
-| Undo memory budget | `HISTORY_BUDGET` in `script.js` |
+| Layer limit | `MAX_LAYERS` in `script.js` |
+| Zoom range | `MIN_ZOOM` and `MAX_ZOOM` in `script.js` |
+| Undo depth and memory | `MAX_STEPS` and `HISTORY_BUDGET` in `script.js` |
 
-To reset the app to a clean state, clear the site's data in your browser. Everything is stored under keys that start with `doodle:`.
+To reset the app to a clean state, clear the site's data in your browser. Settings are stored under keys that start with `doodle:`, and the drawing lives in an IndexedDB database called `doodle-studio`.
 
 ## Browser support
 
-Any current version of Chrome, Edge, Firefox or Safari. The app uses Pointer Events, the `<dialog>` element, `ResizeObserver` and `color-mix()`, so very old browsers are not supported.
+Any current version of Chrome, Edge, Firefox or Safari. The app uses Pointer Events, IndexedDB, the `<dialog>` element, `ResizeObserver` and `color-mix()`, so very old browsers are not supported. Copying an image to the clipboard needs a recent browser; Chrome, Edge, Safari and current Firefox all support it.
 
 ## Ideas for later
 
-- Text tool
-- Layers
-- Zoom and pan
-- Copy to clipboard
+- Drag to reorder layers, and blend modes such as multiply and screen
+- Rectangle select with cut, copy and paste
+- Gradient fill and more brush types
+- Export as JPG or WebP, and save a project file to share a drawing with its layers
